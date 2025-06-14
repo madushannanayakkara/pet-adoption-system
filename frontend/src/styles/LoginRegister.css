@@ -1,0 +1,174 @@
+.main-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.main-container::before {
+  content: "";
+  position: absolute;
+  width: 2000px;
+  height: 2000px;
+  border-radius: 50%;
+  background: linear-gradient(-45deg, #4481eb, #04befe);
+  top: -10%;
+  right: 48%;
+  transform: translateY(-50%);
+  z-index: 6;
+  transition: 1.8s ease-in-out;
+}
+
+.form-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.signin-signup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(40%, -50%);
+  width: 30%;
+  height: 80%;
+  min-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  transition: 1s 0.7s ease-in-out;
+}
+
+.signin-signup .signin {
+  position: absolute;
+  z-index: 2;
+  transition: 0.2s 0.7s ease-in-out;
+}
+
+.signin-signup .signup {
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  transition: 0.2s 0.7s ease-in-out;
+}
+
+.panel-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-around;
+  text-align: center;
+  z-index: 7;
+}
+
+.left-panel {
+  pointer-events: all;
+  padding: 3rem 17% 2rem 12%;
+}
+
+.right-panel {
+  pointer-events: none;
+  padding: 3rem 12% 2rem 17%;
+}
+
+.panel .content {
+  transition: 0.9s 0.6s ease-in-out;
+}
+
+.image {
+  width: 100%;
+  transition: 1.1s 0.4s ease-in-out;
+}
+
+.right-panel .content,
+.right-panel .image {
+  transform: translate(800px);
+}
+
+.main-container.sign-up-mode::before {
+  transform: translate(100%, -50%);
+  right: 52%;
+}
+
+.main-container.sign-up-mode .left-panel .image,
+.main-container.sign-up-mode .left-panel .content {
+  transform: translate(-800px);
+}
+
+.main-container.sign-up-mode .right-panel .image,
+.main-container.sign-up-mode .right-panel .content {
+  transform: translate(0px);
+}
+
+.main-container.sign-up-mode .left-panel {
+  pointer-events: none;
+}
+
+.main-container.sign-up-mode .right-panel {
+  pointer-events: all;
+}
+
+.main-container.sign-up-mode .signin-signup {
+  transform: translate(-60%, -50%) translateX(-80%);
+}
+
+.main-container.sign-up-mode .signin-signup .signin {
+  z-index: 1;
+  opacity: 0;
+}
+
+.main-container.sign-up-mode .signin-signup .signup {
+  z-index: 2;
+  opacity: 1;
+}
+
+.main-container.sign-in-mode::before {
+  transform: translateY(-50%);
+  right: 48%;
+}
+
+.main-container.sign-in-mode .left-panel .image,
+.main-container.sign-in-mode .left-panel .content {
+  transform: translate(0px);
+}
+
+.main-container.sign-in-mode .right-panel .image,
+.main-container.sign-in-mode .right-panel .content {
+  transform: translate(800px);
+}
+
+.main-container.sign-in-mode .left-panel {
+  pointer-events: all;
+}
+
+.main-container.sign-in-mode .right-panel {
+  pointer-events: none;
+}
+
+.main-container.sign-in-mode .signin-signup {
+  transform: translate(40%, -50%);
+}
+
+.main-container.sign-in-mode .signin-signup .signin {
+  z-index: 2;
+  opacity: 1;
+}
+
+.main-container.sign-in-mode .signin-signup .signup {
+  z-index: 1;
+  opacity: 0;
+}
