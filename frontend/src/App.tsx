@@ -8,7 +8,8 @@ import {
 import Users from "./pages/Users";
 import Donators from "./pages/Donators";
 import LoginRegister from "./pages/LoginRegister";
-import AdminDashboard from "./pages/AdminDashboard";
+import MainAdmin from "./pages/MainAdmin";
+import RegionalAdmin from "./pages/AdminDashboard";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./context/ProtectedRoute";
 
@@ -21,10 +22,18 @@ const App = () => {
 
         {/* protected routes */}
         <Route
-          path="/admin"
+          path="/main-admin"
           element={
             <ProtectedRoute roles={["admin"]}>
-              <AdminDashboard />
+              <MainAdmin />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/regional-admin"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <RegionalAdmin />
             </ProtectedRoute>
           }
         ></Route>

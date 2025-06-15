@@ -1,5 +1,5 @@
-const AdminDashboard = () => {
-  return <div>AdminDashboard</div>;
+const RegionalAdmin = () => {
+  return <div>Regional Admin</div>;
 };
 
-export default AdminDashboard;
+export default RegionalAdmin;

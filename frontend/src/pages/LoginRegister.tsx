@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import { Typography } from "@mui/material";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
+import AssignmentIndRoundedIcon from "@mui/icons-material/AssignmentIndRounded";
+import PhoneAndroidRoundedIcon from "@mui/icons-material/PhoneAndroidRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 
 import "../styles/LoginRegister.css";
@@ -12,17 +14,69 @@ import FormButton from "../components/FormButton";
 import LoginImg from "../assets/login.svg";
 import RegisterImg from "../assets/register.svg";
 
+const emptyLoginDetails = {
+  username: "",
+  password: "",
+};
+
+const emptyRegistrationDetails = {
+  username: "",
+  firstname: "",
+  lastname: "",
+  contactNo: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
+
 const LoginRegister = () => {
   const [addedClass, setAddedClass] = useState<string>("");
+  const [loginDetails, setLoginDetails] = useState(emptyLoginDetails);
+  const [registrationDetails, setRegistrationDetails] = useState(
+    emptyRegistrationDetails
+  );
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const { name } = event.target as HTMLButtonElement;
     if (name === "signUp") {
       setAddedClass("sign-up-mode");
+      setLoginDetails(emptyLoginDetails);
+      setRegistrationDetails(emptyRegistrationDetails);
     } else if (name === "signIn") {
       setAddedClass("sign-in-mode");
+      setLoginDetails(emptyLoginDetails);
+      setRegistrationDetails(emptyRegistrationDetails);
     }
   };
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    state: string
+  ) => {
+    const { name, value } = event.target;
+
+    if (state === "login") {
+      setLoginDetails((prevDetails) => ({
+        ...prevDetails,
+        [name]: value,
+      }));
+    }
+
+    if (state === "register") {
+      setRegistrationDetails((prevDetails) => ({
+        ...prevDetails,
+        [name]: value,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    console.log("Test... loginDetails", loginDetails);
+  }, [loginDetails]);
+
+  useEffect(() => {
+    console.log("Test... registrationDetails", registrationDetails);
+  }, [registrationDetails]);
 
   return (
     <div className={`main-container ${addedClass}`}>
@@ -40,17 +94,19 @@ const LoginRegister = () => {
                 placeholder={"Username"}
                 borderRadius={55}
                 icon={<PersonRoundedIcon />}
-                onChange={() => {}}
+                onChange={(e) => handleChange(e, "login")}
+                value={loginDetails.username || ""}
               />
             </Grid>
             <Grid item>
               <FormTextInput
-                name={"Password"}
+                name={"password"}
                 placeholder={"Password"}
                 borderRadius={55}
                 icon={<LockRoundedIcon />}
                 type={fieldsTypes.password}
-                onChange={() => {}}
+                onChange={(e) => handleChange(e, "login")}
+                value={loginDetails.password || ""}
               />
             </Grid>
             <Grid item>
@@ -80,7 +136,38 @@ const LoginRegister = () => {
                 placeholder={"Username"}
                 borderRadius={55}
                 icon={<PersonRoundedIcon />}
-                onChange={() => {}}
+                onChange={(e) => handleChange(e, "register")}
+                value={registrationDetails.username || ""}
+              />
+            </Grid>
+            <Grid item>
+              <FormTextInput
+                name={"firstname"}
+                placeholder={"Firstname"}
+                borderRadius={55}
+                icon={<AssignmentIndRoundedIcon />}
+                onChange={(e) => handleChange(e, "register")}
+                value={registrationDetails.firstname || ""}
+              />
+            </Grid>
+            <Grid item>
+              <FormTextInput
+                name={"lastname"}
+                placeholder={"Lastname"}
+                borderRadius={55}
+                icon={<AssignmentIndRoundedIcon />}
+                onChange={(e) => handleChange(e, "register")}
+                value={registrationDetails.lastname || ""}
+              />
+            </Grid>
+            <Grid item>
+              <FormTextInput
+                name={"contactNo"}
+                placeholder={"070 123 4567"}
+                borderRadius={55}
+                icon={<PhoneAndroidRoundedIcon />}
+                onChange={(e) => handleChange(e, "register")}
+                value={registrationDetails.contactNo || ""}
               />
             </Grid>
             <Grid item>
@@ -89,17 +176,30 @@ const LoginRegister = () => {
                 placeholder={"Email"}
                 borderRadius={55}
                 icon={<EmailRoundedIcon />}
-                onChange={() => {}}
+                onChange={(e) => handleChange(e, "register")}
+                value={registrationDetails.email || ""}
               />
             </Grid>
             <Grid item>
               <FormTextInput
-                name={"Password"}
+                name={"password"}
                 placeholder={"Password"}
                 borderRadius={55}
                 icon={<LockRoundedIcon />}
                 type={fieldsTypes.password}
-                onChange={() => {}}
+                onChange={(e) => handleChange(e, "register")}
+                value={registrationDetails.password || ""}
+              />
+            </Grid>
+            <Grid item>
+              <FormTextInput
+                name={"confirmPassword"}
+                placeholder={"Confirm Password"}
+                borderRadius={55}
+                icon={<LockRoundedIcon />}
+                type={fieldsTypes.password}
+                onChange={(e) => handleChange(e, "register")}
+                value={registrationDetails.confirmPassword || ""}
               />
             </Grid>
             <Grid item>
@@ -143,7 +243,9 @@ const LoginRegister = () => {
           <div className="content">
             <p className="text-white font-bold text-xl pb-1">One of us ?</p>
             <p className="text-white text-lg pb-5">
-              Sign up and discover a great amount of new opportunities!
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ab
+              excepturi odit quasi dicta maxime doloribus exercitationem. Quas
+              aut ratione, est quidem amet natus.
             </p>
             <FormButton
               name="signIn"

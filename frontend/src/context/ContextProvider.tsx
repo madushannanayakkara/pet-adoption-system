@@ -16,7 +16,7 @@ export const userContext = createContext<UserContextType>({
 });
 
 const ContextProvider = ({ children }: ContextProviderProps) => {
-  const role = "user";
+  const role = "admin";
   const authenticated = true;
 
   return (
