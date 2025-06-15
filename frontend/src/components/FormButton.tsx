@@ -1,6 +1,7 @@
 import { Button } from "@mui/material";
 
 export interface FormButtonProps {
+  className?: string;
   name?: string;
   label?: string;
   borderRadius?: number;
@@ -39,7 +40,7 @@ const FormButton = (props: FormButtonProps) => {
     : undefined;
 
   return (
-    <div>
+    <div className={props.className || ""}>
       <Button
         fullWidth={props.fullWidth || false}
         name={props.name}

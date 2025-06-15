@@ -6,6 +6,9 @@ import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import AssignmentIndRoundedIcon from "@mui/icons-material/AssignmentIndRounded";
 import PhoneAndroidRoundedIcon from "@mui/icons-material/PhoneAndroidRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
+import BrandingWatermarkRoundedIcon from "@mui/icons-material/BrandingWatermarkRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 
 import "../styles/LoginRegister.css";
 import FormTextInput from "../components/FormTextInput";
@@ -15,18 +18,25 @@ import LoginImg from "../assets/login.svg";
 import RegisterImg from "../assets/register.svg";
 
 const emptyLoginDetails = {
-  username: "",
+  userName: "",
   password: "",
 };
 
 const emptyRegistrationDetails = {
-  username: "",
-  firstname: "",
-  lastname: "",
+  userName: "",
+  firstName: "",
+  lastName: "",
   contactNo: "",
   email: "",
+  nicNumber: "",
   password: "",
   confirmPassword: "",
+};
+
+const userValidationIcons = {
+  passed: { icon: <CheckCircleRoundedIcon />, color: "rgba(0, 150, 0, 0.5)" },
+  failed: { icon: <CancelRoundedIcon />, color: "rgba(200, 0, 0, 0.5)" },
+  default: undefined,
 };
 
 const LoginRegister = () => {
@@ -90,12 +100,14 @@ const LoginRegister = () => {
             </Grid>
             <Grid item>
               <FormTextInput
-                name={"username"}
+                name={"userName"}
                 placeholder={"Username"}
                 borderRadius={55}
                 icon={<PersonRoundedIcon />}
+                isLoading={false}
+                endIcon={userValidationIcons.default}
                 onChange={(e) => handleChange(e, "login")}
-                value={loginDetails.username || ""}
+                value={loginDetails.userName || ""}
               />
             </Grid>
             <Grid item>
@@ -132,32 +144,32 @@ const LoginRegister = () => {
             </Grid>
             <Grid item>
               <FormTextInput
-                name={"username"}
+                name={"userName"}
                 placeholder={"Username"}
                 borderRadius={55}
                 icon={<PersonRoundedIcon />}
                 onChange={(e) => handleChange(e, "register")}
-                value={registrationDetails.username || ""}
+                value={registrationDetails.userName || ""}
               />
             </Grid>
             <Grid item>
               <FormTextInput
-                name={"firstname"}
+                name={"firstName"}
                 placeholder={"Firstname"}
                 borderRadius={55}
                 icon={<AssignmentIndRoundedIcon />}
                 onChange={(e) => handleChange(e, "register")}
-                value={registrationDetails.firstname || ""}
+                value={registrationDetails.firstName || ""}
               />
             </Grid>
             <Grid item>
               <FormTextInput
-                name={"lastname"}
+                name={"lastName"}
                 placeholder={"Lastname"}
                 borderRadius={55}
                 icon={<AssignmentIndRoundedIcon />}
                 onChange={(e) => handleChange(e, "register")}
-                value={registrationDetails.lastname || ""}
+                value={registrationDetails.lastName || ""}
               />
             </Grid>
             <Grid item>
@@ -178,6 +190,16 @@ const LoginRegister = () => {
                 icon={<EmailRoundedIcon />}
                 onChange={(e) => handleChange(e, "register")}
                 value={registrationDetails.email || ""}
+              />
+            </Grid>
+            <Grid item>
+              <FormTextInput
+                name={"nicNumber"}
+                placeholder={"Nic Number"}
+                borderRadius={55}
+                icon={<BrandingWatermarkRoundedIcon />}
+                onChange={(e) => handleChange(e, "register")}
+                value={registrationDetails.nicNumber || ""}
               />
             </Grid>
             <Grid item>
@@ -203,12 +225,8 @@ const LoginRegister = () => {
               />
             </Grid>
             <Grid item>
-              <Typography className="text-center pt-3">
-                Forgot Password?
-              </Typography>
-            </Grid>
-            <Grid item>
               <FormButton
+                className="mt-6"
                 name="register"
                 label="REGISTER"
                 borderRadius={55}

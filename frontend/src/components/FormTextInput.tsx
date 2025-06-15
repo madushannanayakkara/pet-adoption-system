@@ -1,5 +1,6 @@
 import type { ReactNode, ChangeEvent } from "react";
 import { Grid, TextField, InputAdornment } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const FormTextInput = (props: {
   classAddOns?: string;
@@ -13,6 +14,8 @@ const FormTextInput = (props: {
   borderRadius?: number;
   type?: string;
   icon?: ReactNode;
+  isLoading?: boolean;
+  endIcon?: { icon: ReactNode; color?: string };
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const borderRadiusValue = props.borderRadius
@@ -41,7 +44,7 @@ const FormTextInput = (props: {
           error={!!props.error}
           helperText={props.error}
           InputProps={{
-            startAdornment: props.icon ? (
+            startAdornment: props.icon && (
               <InputAdornment
                 className="here"
                 position="start"
@@ -58,7 +61,23 @@ const FormTextInput = (props: {
               >
                 {props.icon}
               </InputAdornment>
-            ) : undefined,
+            ),
+            endAdornment: props.endIcon && (
+              <InputAdornment
+                position="end"
+                sx={{
+                  color: props.endIcon.color || "rgba(0, 0, 0, 0.25)",
+                  fontSize: props.size === "medium" ? "1.5rem" : "1.2rem",
+                  paddingRight: "2px",
+                }}
+              >
+                {props.isLoading ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  props.endIcon.icon
+                )}
+              </InputAdornment>
+            ),
           }}
           sx={{
             "& input:-webkit-autofill": {
