@@ -17,6 +17,7 @@ const FormTextInput = (props: {
   isLoading?: boolean;
   endIcon?: { icon: ReactNode; color?: string };
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }) => {
   const borderRadiusValue = props.borderRadius
     ? `${props.borderRadius}px`
@@ -38,6 +39,7 @@ const FormTextInput = (props: {
           value={props.value}
           type={props.type}
           onChange={props.onChange}
+          onBlur={props.onBlur}
           size={props.size || "small"}
           placeholder={props.placeholder ? props.placeholder : ""}
           variant={props.variant || "filled"}

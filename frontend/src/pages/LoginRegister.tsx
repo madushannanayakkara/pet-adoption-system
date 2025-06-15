@@ -9,31 +9,32 @@ import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
 import BrandingWatermarkRoundedIcon from "@mui/icons-material/BrandingWatermarkRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
+import Alert from "@mui/material/Alert";
 
 import "../styles/LoginRegister.css";
 import FormTextInput from "../components/FormTextInput";
-import { fieldsTypes } from "../utills/constants";
+import { fieldsTypes } from "../utils/constants";
 import FormButton from "../components/FormButton";
 import LoginImg from "../assets/login.svg";
 import RegisterImg from "../assets/register.svg";
+import {
+  emptyLoginDetails,
+  emptyLoginErrors,
+  emptyRegistrationDetails,
+  emptyRegistrationErrors,
+} from "../utils/utils";
+import {
+  validateLoginDetails,
+  validateRegistrationDetails,
+} from "../validations/LoginRegistration";
+import axios from "axios";
 
-const emptyLoginDetails = {
-  userName: "",
-  password: "",
-};
+type ValidationStatus = "passed" | "failed" | "default";
 
-const emptyRegistrationDetails = {
-  userName: "",
-  firstName: "",
-  lastName: "",
-  contactNo: "",
-  email: "",
-  nicNumber: "",
-  password: "",
-  confirmPassword: "",
-};
-
-const userValidationIcons = {
+const userValidationIcons: Record<
+  ValidationStatus,
+  { icon: JSX.Element; color: string } | undefined
+> = {
   passed: { icon: <CheckCircleRoundedIcon />, color: "rgba(0, 150, 0, 0.5)" },
   failed: { icon: <CancelRoundedIcon />, color: "rgba(200, 0, 0, 0.5)" },
   default: undefined,
@@ -45,6 +46,17 @@ const LoginRegister = () => {
   const [registrationDetails, setRegistrationDetails] = useState(
     emptyRegistrationDetails
   );
+  const [loginError, setLoginError] = useState(emptyLoginErrors);
+  const [registrationError, setRegistrationError] = useState(
+    emptyRegistrationErrors
+  );
+  const [isUsernameLoading, setIsUsernameLoading] = useState<boolean>(false);
+  const [userNameValidationMsg, setUserNameValidationMsg] =
+    useState<ValidationStatus>("default");
+
+  useEffect(() => {
+    console.log("Test... userNameValidationMsg", userNameValidationMsg);
+  }, [userNameValidationMsg]);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const { name } = event.target as HTMLButtonElement;
@@ -52,10 +64,42 @@ const LoginRegister = () => {
       setAddedClass("sign-up-mode");
       setLoginDetails(emptyLoginDetails);
       setRegistrationDetails(emptyRegistrationDetails);
+      setLoginError(emptyLoginErrors);
+      setRegistrationError(emptyRegistrationErrors);
+      setUserNameValidationMsg("default");
     } else if (name === "signIn") {
       setAddedClass("sign-in-mode");
       setLoginDetails(emptyLoginDetails);
       setRegistrationDetails(emptyRegistrationDetails);
+      setLoginError(emptyLoginErrors);
+      setRegistrationError(emptyRegistrationErrors);
+    }
+  };
+
+  const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    const { name } = event.target as HTMLButtonElement;
+    if (name === "login") {
+      const errors = validateLoginDetails(loginDetails);
+
+      if (Object.keys(errors).length === 0) {
+      } else {
+        setLoginError((prev) => ({
+          ...prev,
+          ...errors,
+        }));
+      }
+    } else if (name === "register") {
+      const errors = validateRegistrationDetails(registrationDetails);
+
+      if (Object.keys(errors).length === 0) {
+        console.log("Registration successful", registrationDetails);
+      } else {
+        setRegistrationError((prev) => ({
+          ...prev,
+          ...errors,
+        }));
+      }
     }
   };
 
@@ -70,6 +114,12 @@ const LoginRegister = () => {
         ...prevDetails,
         [name]: value,
       }));
+
+      setLoginError((prev) => ({
+        ...prev,
+        [name]: "",
+        main: "",
+      }));
     }
 
     if (state === "register") {
@@ -77,22 +127,56 @@ const LoginRegister = () => {
         ...prevDetails,
         [name]: value,
       }));
+
+      setRegistrationError((prev) => ({
+        ...prev,
+        [name]: "",
+        main: "",
+      }));
     }
   };
 
-  useEffect(() => {
-    console.log("Test... loginDetails", loginDetails);
-  }, [loginDetails]);
+  const handleOnBlur = async (event: React.FocusEvent<HTMLInputElement>) => {
+    const userName = event.target.value.trim();
 
-  useEffect(() => {
-    console.log("Test... registrationDetails", registrationDetails);
-  }, [registrationDetails]);
+    if (!userName) {
+      setUserNameValidationMsg("default");
+      return;
+    }
+
+    setIsUsernameLoading(true);
+
+    try {
+      const url = "http://localhost:3000/api/auth/username-check";
+      const response = await axios.post(url, { userName });
+
+      setUserNameValidationMsg(response.data?.message || "default");
+    } catch (error) {
+      const fallbackMsg = "default";
+
+      if (axios.isAxiosError(error) && error.response) {
+        const serverMsg = error.response.data?.message;
+        setUserNameValidationMsg(serverMsg || fallbackMsg);
+      } else {
+        setUserNameValidationMsg(fallbackMsg);
+      }
+    } finally {
+      setIsUsernameLoading(false);
+    }
+  };
 
   return (
     <div className={`main-container ${addedClass}`}>
       <div className="form-container">
         <div className="signin-signup">
           <Grid className="signin" container direction="column" spacing={2}>
+            {loginError.main && (
+              <Grid item>
+                <Alert severity="error" className="mb-4">
+                  {loginError.main}
+                </Alert>
+              </Grid>
+            )}
             <Grid item>
               <p className="text-gray-600 font-extrabold text-4xl text-center pb-5">
                 Sign in
@@ -104,10 +188,9 @@ const LoginRegister = () => {
                 placeholder={"Username"}
                 borderRadius={55}
                 icon={<PersonRoundedIcon />}
-                isLoading={false}
-                endIcon={userValidationIcons.default}
                 onChange={(e) => handleChange(e, "login")}
                 value={loginDetails.userName || ""}
+                error={loginError.userName || ""}
               />
             </Grid>
             <Grid item>
@@ -119,6 +202,7 @@ const LoginRegister = () => {
                 type={fieldsTypes.password}
                 onChange={(e) => handleChange(e, "login")}
                 value={loginDetails.password || ""}
+                error={loginError.password || ""}
               />
             </Grid>
             <Grid item>
@@ -132,11 +216,18 @@ const LoginRegister = () => {
                 label="LOGIN"
                 borderRadius={55}
                 fullWidth
-                onClick={() => {}}
+                onClick={handleSubmit}
               />
             </Grid>
           </Grid>
           <Grid className="signup" container direction="column" spacing={2}>
+            {registrationError.main && (
+              <Grid item>
+                <Alert severity="error" className="mb-4">
+                  {registrationError.main}
+                </Alert>
+              </Grid>
+            )}
             <Grid item>
               <p className="text-gray-600 font-extrabold text-4xl text-center pb-5">
                 Sign up
@@ -147,9 +238,13 @@ const LoginRegister = () => {
                 name={"userName"}
                 placeholder={"Username"}
                 borderRadius={55}
+                isLoading={isUsernameLoading}
+                endIcon={userValidationIcons[userNameValidationMsg]}
                 icon={<PersonRoundedIcon />}
                 onChange={(e) => handleChange(e, "register")}
+                onBlur={handleOnBlur}
                 value={registrationDetails.userName || ""}
+                error={registrationError.userName || ""}
               />
             </Grid>
             <Grid item>
@@ -160,6 +255,7 @@ const LoginRegister = () => {
                 icon={<AssignmentIndRoundedIcon />}
                 onChange={(e) => handleChange(e, "register")}
                 value={registrationDetails.firstName || ""}
+                error={registrationError.firstName || ""}
               />
             </Grid>
             <Grid item>
@@ -170,6 +266,7 @@ const LoginRegister = () => {
                 icon={<AssignmentIndRoundedIcon />}
                 onChange={(e) => handleChange(e, "register")}
                 value={registrationDetails.lastName || ""}
+                error={registrationError.lastName || ""}
               />
             </Grid>
             <Grid item>
@@ -180,6 +277,7 @@ const LoginRegister = () => {
                 icon={<PhoneAndroidRoundedIcon />}
                 onChange={(e) => handleChange(e, "register")}
                 value={registrationDetails.contactNo || ""}
+                error={registrationError.contactNo || ""}
               />
             </Grid>
             <Grid item>
@@ -190,6 +288,7 @@ const LoginRegister = () => {
                 icon={<EmailRoundedIcon />}
                 onChange={(e) => handleChange(e, "register")}
                 value={registrationDetails.email || ""}
+                error={registrationError.email || ""}
               />
             </Grid>
             <Grid item>
@@ -200,6 +299,7 @@ const LoginRegister = () => {
                 icon={<BrandingWatermarkRoundedIcon />}
                 onChange={(e) => handleChange(e, "register")}
                 value={registrationDetails.nicNumber || ""}
+                error={registrationError.nicNumber || ""}
               />
             </Grid>
             <Grid item>
@@ -211,6 +311,7 @@ const LoginRegister = () => {
                 type={fieldsTypes.password}
                 onChange={(e) => handleChange(e, "register")}
                 value={registrationDetails.password || ""}
+                error={registrationError.password || ""}
               />
             </Grid>
             <Grid item>
@@ -222,6 +323,7 @@ const LoginRegister = () => {
                 type={fieldsTypes.password}
                 onChange={(e) => handleChange(e, "register")}
                 value={registrationDetails.confirmPassword || ""}
+                error={registrationError.confirmPassword || ""}
               />
             </Grid>
             <Grid item>
@@ -231,7 +333,7 @@ const LoginRegister = () => {
                 label="REGISTER"
                 borderRadius={55}
                 fullWidth
-                onClick={handleClick}
+                onClick={handleSubmit}
               />
             </Grid>
           </Grid>
