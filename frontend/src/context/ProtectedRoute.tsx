@@ -15,7 +15,9 @@ const ProtectedRoute = ({ children, roles }: ProtectedRouteProps) => {
   if (!context) {
     return <Navigate to="/login" />;
   }
-  const { role, authenticated } = context;
+  const { role, authenticated, loading } = context;
+
+  if (loading) return null;
 
   if (!authenticated) {
     return <Navigate to="/login" />;

@@ -1,7 +1,9 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import Joi from "joi";
+
 import { User } from "../models/user.js";
+import { verifyUser } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -85,6 +87,24 @@ router.post("/login", async (req, res) => {
       userName: existingUser.userName,
       role: existingUser.role,
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ errors: { main: "Internal server error" } });
+  }
+});
+
+router.get("/me", verifyUser, async (req, res) => {
+  try {
+    const user = await User.findOne({ userName: req.userName }).select("role");
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "User not found", errors: { goAuthPage: true } });
+    }
+
+    return res
+      .status(200)
+      .json({ role: user.role, errors: { goAuthPage: false } });
   } catch (error) {
     console.error(error);
     res.status(500).send({ errors: { main: "Internal server error" } });
