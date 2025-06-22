@@ -30,6 +30,7 @@ import {
 } from "../validations/AuthValidations";
 import axios from "axios";
 import { userContext } from "../context/ContextProvider";
+import { loginUser, registerUser } from "../services/authService";
 
 type ValidationStatus = "passed" | "failed" | "default";
 
@@ -59,8 +60,6 @@ const LoginRegister = () => {
   const { setRole, setAuthenticated } = useContext(userContext);
   const navigate = useNavigate();
 
-  axios.defaults.withCredentials = true;
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const { name } = event.target as HTMLButtonElement;
     if (name === "signUp") {
@@ -87,8 +86,7 @@ const LoginRegister = () => {
 
       if (Object.keys(errors).length === 0) {
         try {
-          const url = "http://localhost:3000/api/auth/login";
-          const response = await axios.post(url, loginDetails);
+          const response = await loginUser(loginDetails);
 
           if (response.status === 200) {
             const { role } = response.data;
@@ -136,8 +134,7 @@ const LoginRegister = () => {
 
       if (Object.keys(errors).length === 0) {
         try {
-          const url = "http://localhost:3000/api/users/register";
-          const response = await axios.post(url, registrationDetails);
+          const response = await registerUser(registrationDetails);
 
           if (response.status === 200) {
             setAddedClass("sign-in-mode");

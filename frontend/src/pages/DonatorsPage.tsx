@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import type { AxiosResponse } from "axios";
 
+import { fetchTestData } from "../services/donatorsService";
 import FormButton from "../components/FormButton";
 
 interface TestResponse {
@@ -14,13 +14,10 @@ const Donators = () => {
   const [response, setResponse] = useState<TestResponse | null>(null);
 
   const navigate = useNavigate();
-  axios.defaults.withCredentials = true;
 
   const fetchData = async () => {
     try {
-      const res: AxiosResponse<TestResponse> = await axios.get(
-        "http://localhost:3000/api/users/test"
-      );
+      const res = await fetchTestData();
       setResponse(res.data);
       console.log("Response from test route:", res.data);
     } catch (err) {
