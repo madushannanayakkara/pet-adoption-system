@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import { Typography } from "@mui/material";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
@@ -11,7 +12,7 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import Alert from "@mui/material/Alert";
 
-import "../styles/LoginRegister.css";
+import "../styles/AuthStyles.css";
 import FormTextInput from "../components/FormTextInput";
 import { fieldsTypes } from "../utils/constants";
 import FormButton from "../components/FormButton";
@@ -26,8 +27,9 @@ import {
 import {
   validateLoginDetails,
   validateRegistrationDetails,
-} from "../validations/LoginRegistration";
+} from "../validations/AuthValidations";
 import axios from "axios";
+import { userContext } from "../context/ContextProvider";
 
 type ValidationStatus = "passed" | "failed" | "default";
 
@@ -53,10 +55,9 @@ const LoginRegister = () => {
   const [isUsernameLoading, setIsUsernameLoading] = useState<boolean>(false);
   const [userNameValidationMsg, setUserNameValidationMsg] =
     useState<ValidationStatus>("default");
+  const { setUser } = useContext(userContext);
 
-  useEffect(() => {
-    console.log("Test... userNameValidationMsg", userNameValidationMsg);
-  }, [userNameValidationMsg]);
+  const navigate = useNavigate();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const { name } = event.target as HTMLButtonElement;
@@ -76,29 +77,87 @@ const LoginRegister = () => {
     }
   };
 
-  const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     const { name } = event.target as HTMLButtonElement;
     if (name === "login") {
       const errors = validateLoginDetails(loginDetails);
 
       if (Object.keys(errors).length === 0) {
+        try {
+          const url = "http://localhost:3000/api/auth/login";
+          const response = await axios.post(url, loginDetails);
+
+          if (response.status === 200) {
+            console.log("Test...: ", response);
+
+            // setUser()
+            // navigate("./user");
+          } else {
+            const { message } = response.data;
+            setLoginError((prev) => ({
+              ...prev,
+              main: message,
+            }));
+          }
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response) {
+            const { errors } = error.response.data;
+            setLoginError((prev) => ({
+              ...prev,
+              ...errors,
+            }));
+          } else {
+            setLoginError((prev) => ({
+              ...prev,
+              main: "Unexpected error occured!",
+            }));
+          }
+        }
       } else {
-        setLoginError((prev) => ({
-          ...prev,
+        setLoginError({
+          ...emptyLoginErrors,
           ...errors,
-        }));
+        });
       }
     } else if (name === "register") {
       const errors = validateRegistrationDetails(registrationDetails);
 
       if (Object.keys(errors).length === 0) {
-        console.log("Registration successful", registrationDetails);
+        try {
+          const url = "http://localhost:3000/api/users/register";
+          const response = await axios.post(url, registrationDetails);
+
+          if (response.status === 200) {
+            setAddedClass("sign-in-mode");
+            setRegistrationError(emptyRegistrationErrors);
+            setRegistrationDetails(emptyRegistrationDetails);
+          } else {
+            const { message } = response.data;
+            setRegistrationError((prev) => ({
+              ...prev,
+              main: message,
+            }));
+          }
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response) {
+            const { errors } = error.response.data;
+            setRegistrationError((prev) => ({
+              ...prev,
+              ...errors,
+            }));
+          } else {
+            setRegistrationError((prev) => ({
+              ...prev,
+              main: "Unexpected error occured!",
+            }));
+          }
+        }
       } else {
-        setRegistrationError((prev) => ({
-          ...prev,
+        setRegistrationError({
+          ...emptyRegistrationErrors,
           ...errors,
-        }));
+        });
       }
     }
   };

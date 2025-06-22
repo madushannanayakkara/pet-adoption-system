@@ -5,6 +5,15 @@ export const validateRegistrationDetails = (
 ) => {
   const errors: Record<string, string> = {};
 
+  const allEmpty = Object.values(details).every(
+    (value) => typeof value === "string" && !value.trim()
+  );
+
+  if (allEmpty) {
+    errors.main = "All fields are required";
+    return errors;
+  }
+
   // Required field check
   for (const [key, value] of Object.entries(details)) {
     if (!value.trim()) {

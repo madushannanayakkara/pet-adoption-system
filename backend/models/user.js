@@ -64,7 +64,7 @@ const validateUser = (user) => {
     role: Joi.string().valid("admin", "user").default("user").label("Role"),
   });
 
-  return schema.validate(user);
+  return schema.validate(user, { abortEarly: false, stripUnknown: true });
 };
 
 module.exports = {

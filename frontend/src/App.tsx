@@ -5,12 +5,12 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import Users from "./pages/Users";
-import Donators from "./pages/Donators";
-import LoginRegister from "./pages/LoginRegister";
-import MainAdmin from "./pages/MainAdmin";
-import RegionalAdmin from "./pages/AdminDashboard";
-import Unauthorized from "./pages/Unauthorized";
+import Users from "./pages/UsersPage";
+import Donators from "./pages/DonatorsPage";
+import LoginRegister from "./pages/AuthPage";
+import MainAdmin from "./pages/MainAdminPage";
+import RegionalAdmin from "./pages/AdminPage";
+import Unauthorized from "./pages/UnauthorizedPage";
 import ProtectedRoute from "./context/ProtectedRoute";
 
 const App = () => {
