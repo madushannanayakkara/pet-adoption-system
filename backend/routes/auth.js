@@ -1,7 +1,9 @@
-const router = require("express").Router();
-const { User } = require("../models/user");
-const Joi = require("joi");
-const bcrypt = require("bcryptjs");
+import { Router } from "express";
+import bcrypt from "bcryptjs";
+import Joi from "joi";
+import { User } from "../models/user.js";
+
+const router = Router();
 
 router.post("/username-check", async (req, res) => {
   try {
@@ -61,10 +63,25 @@ router.post("/login", async (req, res) => {
     }
 
     // Generate JWT token
-    const token = existingUser.generateAuthToken();
+    const accessToken = existingUser.generateAuthToken(
+      process.env.JWT_ACC_SECRET,
+      "1m"
+    );
+    const refreshToken = existingUser.generateAuthToken(
+      process.env.JWT_REF_SECRET,
+      "5m"
+    );
+
+    res.cookie("accessToken", accessToken, { maxAge: 60000 });
+    res.cookie("refreshToken", refreshToken, {
+      maxAge: 300000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+
     return res.status(200).send({
       message: "Login successful",
-      token,
       userName: existingUser.userName,
       role: existingUser.role,
     });
@@ -83,4 +100,4 @@ const validateLogin = (user) => {
   return schema.validate(user);
 };
 
-module.exports = router;
+export default router;

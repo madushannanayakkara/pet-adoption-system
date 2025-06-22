@@ -55,9 +55,11 @@ const LoginRegister = () => {
   const [isUsernameLoading, setIsUsernameLoading] = useState<boolean>(false);
   const [userNameValidationMsg, setUserNameValidationMsg] =
     useState<ValidationStatus>("default");
-  const { setUser } = useContext(userContext);
 
+  const { setRole, setAuthenticated } = useContext(userContext);
   const navigate = useNavigate();
+
+  axios.defaults.withCredentials = true;
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const { name } = event.target as HTMLButtonElement;
@@ -89,10 +91,19 @@ const LoginRegister = () => {
           const response = await axios.post(url, loginDetails);
 
           if (response.status === 200) {
-            console.log("Test...: ", response);
+            const { role } = response.data;
 
-            // setUser()
-            // navigate("./user");
+            setRole(role);
+            setAuthenticated(true);
+            if (role === "mainAdmin") {
+              navigate("/main-admin");
+            } else if (role === "regAdmin") {
+              navigate("/regional-admin");
+            } else if (role === "user") {
+              navigate("/user");
+            } else if (role === "donor") {
+              navigate("/donator");
+            }
           } else {
             const { message } = response.data;
             setLoginError((prev) => ({
