@@ -60,7 +60,7 @@ const Users = () => {
         sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
       >
         <Toolbar />
-        <Container>{renderContent()}</Container>
+        {renderContent()}
       </Box>
     </Box>
   );
