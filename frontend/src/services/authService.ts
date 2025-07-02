@@ -17,3 +17,8 @@ export const getCurrentUser = async () => {
   const response = await axiosInstance.get("/auth/me");
   return response;
 };
+
+export const deleteCurrentUser = async () => {
+  const response = await axiosInstance.delete("/auth/logout");
+  return response;
+};

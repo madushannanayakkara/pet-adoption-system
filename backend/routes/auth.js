@@ -111,6 +111,21 @@ router.get("/me", verifyUser, async (req, res) => {
   }
 });
 
+router.delete("/logout", (req, res) => {
+  res.clearCookie("accessToken", {
+    path: "/",
+  });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+  });
+
+  return res.status(200).json({ message: "Logged out successfully" });
+});
+
 const validateLogin = (user) => {
   const schema = Joi.object({
     userName: Joi.string().required().label("User Name"),
